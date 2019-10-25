@@ -19,10 +19,8 @@ class Rfid {
   private:
     Logic &_logic;
     uint8_t getID(uint8_t reader);
-    bool isIdol(byte id[], uint8_t reader);
     bool compareTags(uint8_t index);
     RFID_STATE checkForTag(uint8_t index, MFRC522 *mfr);
-    bool compareIDs(byte idOne[], byte idTwo[]);
     void checkForPuzzleSolved();
     String prettyState(uint8_t);
 

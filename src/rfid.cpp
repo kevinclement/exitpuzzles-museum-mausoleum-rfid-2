@@ -102,22 +102,9 @@ RFID_STATE Rfid::checkForTag(uint8_t index, MFRC522 *mfr) {
   return st;
 }
 
-bool Rfid::isIdol(byte id[], uint8_t reader) {
-  return compareIDs(id, tags[reader]);
-}
-
 bool Rfid::compareTags(uint8_t index) {
   for ( uint8_t k = 0; k < 4; k++ ) {
     if ( readCards[index][k] != tags[index][k] ) {
-       return false;
-    }
-  }
-  return true;
-}
-
-bool Rfid::compareIDs(byte idOne[], byte idTwo[] ) {   
-  for ( uint8_t k = 0; k < 4; k++ ) {
-    if ( idOne[k] != idTwo[k] ) {
        return false;
     }
   }
