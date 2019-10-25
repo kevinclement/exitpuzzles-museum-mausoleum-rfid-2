@@ -33,7 +33,7 @@ void Rfid::setup() {
 }
 
 void Rfid::handle() {
-  checkForTag_1(0);
+  checkForTag_1(0, &mfrc522_1);
   // if ( mfrc522_1.PICC_IsNewCardPresent()) {
   //   if (mfrc522_1.PICC_ReadCardSerial()) {
   //     Serial.println("@@@ CARD 1 @@@");
@@ -85,7 +85,7 @@ int _rfid_error_counter = 0;
 bool _tag_found = false;
 byte readCard[4];
 
-void Rfid::checkForTag_1(uint8_t index) {
+void Rfid::checkForTag_1(uint8_t index, MFRC522 *mfr) {
   tag_present_prev[index] = tag_present[index];
 
   error_counter[index] += 1;
@@ -98,23 +98,23 @@ void Rfid::checkForTag_1(uint8_t index) {
   byte bufferSize = sizeof(bufferATQA);
 
   // Reset baud rates
-  mfrc522_1.PCD_WriteRegister(mfrc522_1.TxModeReg, 0x00);
-  mfrc522_1.PCD_WriteRegister(mfrc522_1.RxModeReg, 0x00);
+  mfr->PCD_WriteRegister(mfr->TxModeReg, 0x00);
+  mfr->PCD_WriteRegister(mfr->RxModeReg, 0x00);
 
   // Reset ModWidthReg
-  mfrc522_1.PCD_WriteRegister(mfrc522_1.ModWidthReg, 0x26);
+  mfr->PCD_WriteRegister(mfr->ModWidthReg, 0x26);
 
-  MFRC522::StatusCode result = mfrc522_1.PICC_RequestA(bufferATQA, &bufferSize);
+  MFRC522::StatusCode result = mfr->PICC_RequestA(bufferATQA, &bufferSize);
 
-  if(result == mfrc522_1.STATUS_OK){
-    if ( ! mfrc522_1.PICC_ReadCardSerial()) { //Since a PICC placed get Serial and continue   
+  if(result == mfr->STATUS_OK){
+    if ( ! mfr->PICC_ReadCardSerial()) { //Since a PICC placed get Serial and continue   
       return;
     }
     error_counter[index] = 0;
     tag_found[index] = true;
 
     for ( uint8_t i = 0; i < 4; i++) {
-       readCards[index][i] = mfrc522_1.uid.uidByte[i];
+       readCards[index][i] = mfr->uid.uidByte[i];
     }
   }
 

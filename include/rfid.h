@@ -20,7 +20,7 @@ class Rfid {
     uint8_t getID(uint8_t reader);
     bool isIdol(byte id[], uint8_t reader);
     bool compareTags();
-    void checkForTag_1(uint8_t index);
+    void checkForTag_1(uint8_t index, MFRC522 *mfr);
     bool compareIDs(byte idOne[], byte idTwo[]);
     void checkForPuzzleSolved();
     String prettyState(uint8_t);
