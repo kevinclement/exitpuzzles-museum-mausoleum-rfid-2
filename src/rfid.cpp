@@ -34,6 +34,7 @@ void Rfid::setup() {
 
 void Rfid::handle() {
   checkForTag_1(0, &mfrc522_1);
+  checkForTag_1(1, &mfrc522_2);
   // if ( mfrc522_1.PICC_IsNewCardPresent()) {
   //   if (mfrc522_1.PICC_ReadCardSerial()) {
   //     Serial.println("@@@ CARD 1 @@@");
