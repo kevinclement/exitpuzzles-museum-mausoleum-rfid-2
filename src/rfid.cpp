@@ -1,7 +1,6 @@
 #include "Arduino.h"
 #include "rfid.h"
 #include "logic.h"
-#include <MFRC522.h>
 #include <SPI.h>
 
 MFRC522 mfrc522_1(8, 7);

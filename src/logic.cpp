@@ -1,6 +1,6 @@
 #include "Arduino.h"
 #include "logic.h"
-#include "rfidReader.h"
+#include "rfid.h"
 #include "version.h"
 
 bool _solved = false;

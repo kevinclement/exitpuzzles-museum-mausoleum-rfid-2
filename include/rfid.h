@@ -1,11 +1,12 @@
 #pragma once
 
 #include "Arduino.h"
-#include "rfidReader.h"
+#include <MFRC522.h>
 
 class Logic;
 
 #define NR_OF_READERS   2
+enum RFID_STATE {INCORRECT, CORRECT, MISSING, UNKNOWN};
 
 class Rfid {
   public:
