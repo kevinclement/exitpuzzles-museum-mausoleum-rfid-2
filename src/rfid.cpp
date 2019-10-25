@@ -1,13 +1,11 @@
 #include "Arduino.h"
 #include "rfid.h"
 #include "logic.h"
-#include "rfidReader.h"
 #include <MFRC522.h>
 #include <SPI.h>
 
 MFRC522 mfrc522_1(8, 7);
 MFRC522 mfrc522_2(10, 9);
-RfidReader reader[NR_OF_READERS];
 
 byte tags[][4] = {
   { 0xA7, 0x86, 0x8A, 0xF2 },
@@ -36,12 +34,6 @@ void Rfid::handle() {
   checkForTag(0, &mfrc522_1);
   checkForTag(1, &mfrc522_2);
 }
-
-bool tag_present_prev[] = { false, false };
-bool tag_present[] = { false, false };
-int error_counter[] = { 0, 0 };
-bool tag_found[] = { false, false };
-byte readCards[2][4];
 
 void Rfid::checkForTag(uint8_t index, MFRC522 *mfr) {
   tag_present_prev[index] = tag_present[index];

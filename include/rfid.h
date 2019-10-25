@@ -24,4 +24,10 @@ class Rfid {
     bool compareIDs(byte idOne[], byte idTwo[]);
     void checkForPuzzleSolved();
     String prettyState(uint8_t);
+
+    bool tag_present_prev[NR_OF_READERS] = { false, false };
+    bool tag_present[NR_OF_READERS] = { false, false };
+    int error_counter[NR_OF_READERS] = { 0, 0 };
+    bool tag_found[NR_OF_READERS] = { false, false };
+    byte readCards[NR_OF_READERS][4];
 };
