@@ -25,14 +25,17 @@ void Rfid::setup() {
   delay(4);
   mfrc522_1.PCD_DumpVersionToSerial();
   mfrc522_2.PCD_DumpVersionToSerial();
-  
+
+  // store addresses
+  mfr[0] = &mfrc522_1;
+  mfr[1] = &mfrc522_2;
+
   Serial.println("\nReady to Scan...");
 }
 
 void Rfid::handle() {
-  //NR_OF_READERS
-  for (uint8_t i = 0; i < 1; i++) {
-    RFID_STATE st = checkForTag(0, &mfrc522_1);
+  for (uint8_t i = 0; i < NR_OF_READERS; i++) {
+    RFID_STATE st = checkForTag(i, mfr[i]);
     if (st != state[i]) {
       Serial.print("state changed for ");
       Serial.print(i + 1);
