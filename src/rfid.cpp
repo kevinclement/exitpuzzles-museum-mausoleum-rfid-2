@@ -33,45 +33,8 @@ void Rfid::setup() {
 }
 
 void Rfid::handle() {
-  checkForTag_1(0, &mfrc522_1);
-  checkForTag_1(1, &mfrc522_2);
-  // if ( mfrc522_1.PICC_IsNewCardPresent()) {
-  //   if (mfrc522_1.PICC_ReadCardSerial()) {
-  //     Serial.println("@@@ CARD 1 @@@");
-  //     mfrc522_1.PICC_DumpToSerial(&(mfrc522_1.uid));
-  //   }
-	// }
-
-  // if ( mfrc522_2.PICC_IsNewCardPresent()) {
-  //   Serial.println("NEW CARD");
-  //   if (mfrc522_2.PICC_ReadCardSerial()) {
-  //     Serial.println("### CARD 2 ###");
-  //     mfrc522_2.PICC_DumpToSerial(&(mfrc522_2.uid));
-  //   }
-	// }
-
-  // for (uint8_t i = 0; i < NR_OF_READERS; i++) {
-
-  //   reader[i].handle();
-
-  //   if (state[i] != reader[i].state) {
-  //     Serial.print("state changed for ");
-  //     Serial.print(i + 1);
-  //     Serial.print(" ");
-  //     Serial.print(prettyState(state[i]));
-  //     Serial.print(" => ");
-  //     Serial.println(prettyState(reader[i].state));
-
-  //     state[i] = reader[i].state;
-  //     checkForPuzzleSolved();
-  //     _logic.status();
-  //   }
-
-  //   //     Serial.print("UNKNOWN tag ");
-  //   //     printID(readCard);
-  //   //     Serial.print(" on reader ");
-  //   //     Serial.print(i);
-  // }
+  checkForTag(0, &mfrc522_1);
+  checkForTag(1, &mfrc522_2);
 }
 
 bool tag_present_prev[] = { false, false };
@@ -80,13 +43,7 @@ int error_counter[] = { 0, 0 };
 bool tag_found[] = { false, false };
 byte readCards[2][4];
 
-bool rfid_tag_present_prev = false;
-bool rfid_tag_present = false;
-int _rfid_error_counter = 0;
-bool _tag_found = false;
-byte readCard[4];
-
-void Rfid::checkForTag_1(uint8_t index, MFRC522 *mfr) {
+void Rfid::checkForTag(uint8_t index, MFRC522 *mfr) {
   tag_present_prev[index] = tag_present[index];
 
   error_counter[index] += 1;
@@ -124,7 +81,7 @@ void Rfid::checkForTag_1(uint8_t index, MFRC522 *mfr) {
   // rising edge
   if (tag_present[index] && !tag_present_prev[index]){
     Serial.println("Tag found, checking...");
-    state[index] = compareTags() ? CORRECT : INCORRECT;
+    state[index] = compareTags(index) ? CORRECT : INCORRECT;
   }
 
   // falling edge
@@ -138,9 +95,9 @@ bool Rfid::isIdol(byte id[], uint8_t reader) {
   return compareIDs(id, tags[reader]);
 }
 
-bool Rfid::compareTags() {
+bool Rfid::compareTags(uint8_t index) {
   for ( uint8_t k = 0; k < 4; k++ ) {
-    if ( readCard[k] != tags[0][k] ) {
+    if ( readCards[index][k] != tags[index][k] ) {
        return false;
     }
   }
