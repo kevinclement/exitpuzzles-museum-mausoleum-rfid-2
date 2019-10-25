@@ -33,7 +33,7 @@ void Rfid::setup() {
 }
 
 void Rfid::handle() {
-  checkForTag_1();
+  checkForTag_1(0);
   // if ( mfrc522_1.PICC_IsNewCardPresent()) {
   //   if (mfrc522_1.PICC_ReadCardSerial()) {
   //     Serial.println("@@@ CARD 1 @@@");
@@ -72,19 +72,25 @@ void Rfid::handle() {
   //   //     Serial.print(i);
   // }
 }
+
+bool tag_present_prev[] = { false, false };
+bool tag_present[] = { false, false };
+int error_counter[] = { 0, 0 };
+bool tag_found[] = { false, false };
+byte readCards[2][4];
+
 bool rfid_tag_present_prev = false;
 bool rfid_tag_present = false;
 int _rfid_error_counter = 0;
 bool _tag_found = false;
-RFID_STATE state_1 = UNKNOWN;
 byte readCard[4];
 
-void Rfid::checkForTag_1() {
-  rfid_tag_present_prev = rfid_tag_present;
+void Rfid::checkForTag_1(uint8_t index) {
+  tag_present_prev[index] = tag_present[index];
 
-  _rfid_error_counter += 1;
-  if(_rfid_error_counter > 2){
-    _tag_found = false;
+  error_counter[index] += 1;
+  if(error_counter[index] > 2){
+    tag_found[index] = false;
   }
 
   // Detect Tag without looking for collisions
@@ -104,26 +110,26 @@ void Rfid::checkForTag_1() {
     if ( ! mfrc522_1.PICC_ReadCardSerial()) { //Since a PICC placed get Serial and continue   
       return;
     }
-    _rfid_error_counter = 0;
-    _tag_found = true;
+    error_counter[index] = 0;
+    tag_found[index] = true;
 
     for ( uint8_t i = 0; i < 4; i++) {
-       readCard[i] = mfrc522_1.uid.uidByte[i];
+       readCards[index][i] = mfrc522_1.uid.uidByte[i];
     }
   }
 
-  rfid_tag_present = _tag_found;
-  
+  tag_present[index] = tag_found[index];
+
   // rising edge
-  if (rfid_tag_present && !rfid_tag_present_prev){
+  if (tag_present[index] && !tag_present_prev[index]){
     Serial.println("Tag found, checking...");
-    state_1 = compareTags() ? CORRECT : INCORRECT;
+    state[index] = compareTags() ? CORRECT : INCORRECT;
   }
 
   // falling edge
-  if (!rfid_tag_present && rfid_tag_present_prev){
+  if (!tag_present[index] && tag_present_prev[index]){
     Serial.println("Tag gone");
-    state_1 = MISSING;
+    state[index] = MISSING;
   }
 }
 
