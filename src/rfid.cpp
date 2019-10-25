@@ -31,11 +31,26 @@ void Rfid::setup() {
 }
 
 void Rfid::handle() {
-  checkForTag(0, &mfrc522_1);
-  checkForTag(1, &mfrc522_2);
+  //NR_OF_READERS
+  for (uint8_t i = 0; i < 1; i++) {
+    RFID_STATE st = checkForTag(0, &mfrc522_1);
+    if (st != state[i]) {
+      Serial.print("state changed for ");
+      Serial.print(i + 1);
+      Serial.print(" ");
+      Serial.print(prettyState(state[i]));
+      Serial.print(" => ");
+      Serial.println(prettyState(st));
+
+      state[i] = st;
+      checkForPuzzleSolved();
+      _logic.status();
+    }
+  }
 }
 
-void Rfid::checkForTag(uint8_t index, MFRC522 *mfr) {
+RFID_STATE Rfid::checkForTag(uint8_t index, MFRC522 *mfr) {
+  RFID_STATE st = state[index];
   tag_present_prev[index] = tag_present[index];
 
   error_counter[index] += 1;
@@ -58,7 +73,7 @@ void Rfid::checkForTag(uint8_t index, MFRC522 *mfr) {
 
   if(result == mfr->STATUS_OK){
     if ( ! mfr->PICC_ReadCardSerial()) { //Since a PICC placed get Serial and continue   
-      return;
+      return st;
     }
     error_counter[index] = 0;
     tag_found[index] = true;
@@ -73,14 +88,16 @@ void Rfid::checkForTag(uint8_t index, MFRC522 *mfr) {
   // rising edge
   if (tag_present[index] && !tag_present_prev[index]){
     Serial.println("Tag found, checking...");
-    state[index] = compareTags(index) ? CORRECT : INCORRECT;
+    st = compareTags(index) ? CORRECT : INCORRECT;
   }
 
   // falling edge
   if (!tag_present[index] && tag_present_prev[index]){
     Serial.println("Tag gone");
-    state[index] = MISSING;
+    st = MISSING;
   }
+
+  return st;
 }
 
 bool Rfid::isIdol(byte id[], uint8_t reader) {
