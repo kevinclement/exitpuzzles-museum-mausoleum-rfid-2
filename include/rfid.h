@@ -26,7 +26,7 @@ class Rfid {
     void checkForPuzzleSolved();
     String prettyState(uint8_t);
 
-    MFRC522 *mfr[2];
+    MFRC522 *mfr[NR_OF_READERS];
     bool tag_present_prev[NR_OF_READERS] = { false, false };
     bool tag_present[NR_OF_READERS] = { false, false };
     int error_counter[NR_OF_READERS] = { 0, 0 };
